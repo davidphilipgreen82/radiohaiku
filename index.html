@@ -8,7 +8,11 @@
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;max-width:720px;margin:36px auto;padding:12px;color:#111}
   h1{font-size:1.4rem;margin-bottom:.2rem}
   p{margin:.2rem 0 1rem 0}
-  #haiku{white-space:pre; font-size:2.25rem; padding:16px; border-radius:10px; background:#f4f4f6}
+  #haikuContainer{font-size:2.25rem;padding:16px;border-radius:10px;background:#f4f4f6}
+  .lineRow{display:flex;align-items:center;margin:.25rem 0}
+  .pauseBox{width:40px;height:40px;border:2px solid #ccc;margin-right:12px;text-align:center;line-height:36px;cursor:pointer;font-weight:bold;font-size:1.5rem;border-radius:6px;user-select:none}
+  .pauseBox.active{background:#222;color:#fff;border-color:#222}
+  .lineText{flex:1;white-space:pre-wrap}
   button{margin-right:.5rem;padding:.5rem .8rem;border-radius:8px;border:1px solid #ccc;background:white;cursor:pointer}
   small{color:#666}
   input[type="text"]{width:100%;padding:.5rem;border-radius:6px;border:1px solid #ccc;margin-top:.5rem}
@@ -16,27 +20,28 @@
 </head>
 <body>
   <h1>RadioHaiku</h1>
-  <p>Random haikus from Radiohead lyrics</p>
+  <p>Miserable haikus courtesy of Radiohead</p>
+
+  <div id="haikuContainer" aria-live="polite">
+    <div class="lineRow"><div class="pauseBox" data-line="0"></div><div class="lineText" id="line0"></div></div>
+    <div class="lineRow"><div class="pauseBox" data-line="1"></div><div class="lineText" id="line1"></div></div>
+    <div class="lineRow"><div class="pauseBox" data-line="2"></div><div class="lineText" id="line2"></div></div>
+  </div>
+
+<br>
 
   <div>
     <button id="generateBtn">Generate haiku</button>
     <button id="copyBtn">Copy haiku</button>
     <button id="randomURLBtn">Share this haiku</button>
   </div>
-
-  <div id="haiku" aria-live="polite">Press Generate →</div>
-
+  
 <span style="display:none">
-<!--  <p><small>URL examples (either form works):</small></p>
-  <pre><code>index.html?a=OKC1-1&b=OKC1-5&c=OKC3-2
-index.html/a=OKC1-1b=OKC1-5c=OKC3-2</code></pre>
-
-  <label>Current resolved parameters (a = 5, b = 7, c = 5):</label>-->
   <input id="paramsView" readonly />
 </span>
 
 <script>
-// Embedded dataset (from JSON)
+// --- Existing data (truncated for brevity in this example) ---
 const radioheadLines = {
   five: {
     "PH1-1": "Sun and moon and stars",
@@ -99,31 +104,31 @@ const radioheadLines = {
     "TB11-1": "It eats me alive",
     "TB11-2": "The big wall bites back",
     "TB11-3": "You sit there and sulk",
-    "OKC1-1": "In the next world war",
-    "OKC1-2": "I am born again",
-    "OKC1-3": "In the neon sign",
-    "OKC1-4": "Scrolling up and down",
-    "OKC1-7": "In a deep deep sleep",
-    "OKC1-8": "Of the innocent",
-    "OKC2-3": "Kicking and squealing",
-    "OKC2-4": "You don't remember",
-    "OKC2-6": "Off with his head, man",
-    "OKC2-7": "God loves his children",
-    "OKC3-1": "I keep forgetting",
-    "OKC3-2": "I live in a town",
-    "OKC3-3": "Aliens hover",
-    "OKC3-4": "Making home movies",
-    "OKC3-6": "I'd tell all my friends",
-    "OKC3-7": "Lost it completely",
-    "OKC4-2": "We hope that you choke",
-    "OKC6-1": "This is what you get",
-    "OKC7-1": "Not drinking too much",
-    "OKC7-5": "A pig in a cage",
-    "OKC8-2": "Somewhere we will meet",
-    "OKC10-1": "Bruises that won't heal",
-    "OKC12-2": "Like it's seen a ghost",
-    "OKC12-3": "No one else would know",
-    "OKC12-5": "That's when you see sparks",
+    "OK1-1": "In the next world war",
+    "OK1-2": "I am born again",
+    "OK1-3": "In the neon sign",
+    "OK1-4": "Scrolling up and down",
+    "OK1-7": "In a deep deep sleep",
+    "OK1-8": "Of the innocent",
+    "OK2-3": "Kicking and squealing",
+    "OK2-4": "You don't remember",
+    "OK2-6": "Off with his head, man",
+    "OK2-7": "God loves his children",
+    "OK3-1": "I keep forgetting",
+    "OK3-2": "I live in a town",
+    "OK3-3": "Aliens hover",
+    "OK3-4": "Making home movies",
+    "OK3-6": "I'd tell all my friends",
+    "OK3-7": "Lost it completely",
+    "OK4-2": "We hope that you choke",
+    "OK6-1": "This is what you get",
+    "OK7-1": "Not drinking too much",
+    "OK7-5": "A pig in a cage",
+    "OK8-2": "Somewhere we will meet",
+    "OK10-1": "Bruises that won't heal",
+    "OK12-2": "Like it's seen a ghost",
+    "OK12-3": "No one else would know",
+    "OK12-5": "That's when you see sparks",
     "KA2-3": "We've got heads on sticks",
     "KA4-1": "I go where I please",
     "KA7-3": "Trapdoors that open",
@@ -152,45 +157,44 @@ const radioheadLines = {
     "KA24-3": "Calling after me",
     "KA24-4": "Headlights on full beam",
     "KA24-6": "Coming after me",
-    "HTT1-1": "I'll lay down the tracks",
-    "HTT1-2": "There is no way out",
-    "HTT1-3": "You can scream & you",
-    "HTT1-4": "It is too late now",
-    "HTT1-5": "Paying attention",
-    "HTT1-6": "I get it all wrong",
-    "HTT1-7": "Like flies the burgers",
-    "HTT1-8": "All hail to the thief",
-    "HTT2-1": "We can wipe you out",
-    "HTT3-2": "But know right from wrong",
-    "HTT3-3": "Sail us to the moon",
-    "HTT4-2": "So you're backtracking",
-    "HTT6-1": "X will mark the place",
-    "HTT6-2": "Like parting the waves",
-    "HTT6-3": "There'll be no more lies",
-    "HTT7-1": "We want the young blood",
-    "HTT7-2": "Are you fracturing",
-    "HTT7-3": "Our rivers poisoned",
-    "HTT7-4": "We want the sweet meats",
-    "HTT8-3": "They will suck you down",
-    "HTT8-4": "To the otherside",
-    "HTT8-5": "This is the gloaming",
-    "HTT9-1": "Waiting to happen",
-    "HTT10-1": "With white elephants",
-    "HTT10-2": "Little babies' eyes",
-    "HTT12-1": "Holding half a head",
-    "HTT12-2": "Cheering and waving",
-    "HTT12-3": "Strangled beaten up",
-    "HTT14-1": "Dragging out your dead",
-    "HTT14-2": "Singing I miss you",
-    "HTT14-3": "Out pops the cracker",
-    "HTT14-4": "Smacks you in the head",
-    "HTT14-5": "Knives you in the neck",
-    "HTT14-6": "Kicks you in the teeth",
-    "HTT14-7": "Step up get the gunge",
-    "HTT14-8": "Promise to be good",
-    "HTT14-9": "But he calls me up",
-    "HTT14-10": "Calls me on the phone",
-    "HTT14-11": "Steal all my children",
+    "HT1-1": "I'll lay down the tracks",
+    "HT1-2": "There is no way out",
+    "HT1-4": "It is too late now",
+    "HT1-5": "Paying attention",
+    "HT1-6": "I get it all wrong",
+    "HT1-7": "Like flies the burgers",
+    "HT1-8": "All hail to the thief",
+    "HT2-1": "We can wipe you out",
+    "HT3-2": "But know right from wrong",
+    "HT3-3": "Sail us to the moon",
+    "HT4-2": "So you're backtracking",
+    "HT6-1": "X will mark the place",
+    "HT6-2": "Like parting the waves",
+    "HT6-3": "There'll be no more lies",
+    "HT7-1": "We want the young blood",
+    "HT7-2": "Are you fracturing",
+    "HT7-3": "Our rivers poisoned",
+    "HT7-4": "We want the sweet meats",
+    "HT8-3": "They will suck you down",
+    "HT8-4": "To the otherside",
+    "HT8-5": "This is the gloaming",
+    "HT9-1": "Waiting to happen",
+    "HT10-1": "With white elephants",
+    "HT10-2": "Little babies' eyes",
+    "HT12-1": "Holding half a head",
+    "HT12-2": "Cheering and waving",
+    "HT12-3": "Strangled beaten up",
+    "HT14-1": "Dragging out your dead",
+    "HT14-2": "Singing I miss you",
+    "HT14-3": "Out pops the cracker",
+    "HT14-4": "Smacks you in the head",
+    "HT14-5": "Knives you in the neck",
+    "HT14-6": "Kicks you in the teeth",
+    "HT14-7": "Step up get the gunge",
+    "HT14-8": "Promise to be good",
+    "HT14-9": "But he calls me up",
+    "HT14-10": "Calls me on the phone",
+    "HT14-11": "Steal all my children",
     "IR1-5": "It comes to us all",
     "IR2-11": "The light's gone for me",
     "IR3-3": "You paint yourself white",
@@ -219,10 +223,8 @@ const radioheadLines = {
     "IR10-10": "After it's too late"
   },
   seven: {
-    "PH1-1": "working out chaotic things",
-    "PH1-2": "back to the top",
+    "PH1-1": "Working out chaotic things",
     "PH2-1": "Whatever makes you happy",
-    "PH2-2": "You're so fucking special",
     "PH3-1": "He's a dangerous bigot",
     "PH3-2": "And he's just like his daddy",
     "PH4-0": "I don't wanna hear your voice",
@@ -230,16 +232,13 @@ const radioheadLines = {
     "PH5-1": "But I'm playing with myself",
     "PH6-1": "I wanna be in a band",
     "PH6-2": "Anyone can play guitar",
-    "PH7-0": "clever toys for little boys",
-    "PH7-1": "You're free until you drop",
-    "PH7-2": "The answer to your prayers",
+    "PH7-0": "Clever toys for little boys",
     "PH7-3": "You're free 'til you've had enough",
     "PH7-4": "On politics and power",
-    "PH8-1": "wanted anything but this",
+    "PH8-1": "Wanted anything but this",
     "PH8-2": "I will not control myself",
     "PH8-3": "I spit on the hand that feeds",
-    "PH9-1": "Hook back up to the cathode ray",
-    "PH10-1": "Please forget the words that",
+    "PH9-1": "Back up to the cathode ray",
     "PH10-2": "It keeps rattling my cage",
     "PH11-1": "Tell me one thing and let it go",
     "PH12-1": "All the time killing what I feel",
@@ -259,28 +258,28 @@ const radioheadLines = {
     "TB8-1": "Faith you're driving me away",
     "TB9-4": "Wish that it was bullet proof",
     "TB9-1": "Limb by limb and tooth by tooth",
-    "OKC1-5":"In an interstellar burst",
-    "OKC1-6":"Back to save the universe",
-    "OKC1-9":"I'm amazed that I survived",
-    "OKC2-1":"I'm trying to get some rest",
-    "OKC2-2":"Of no consequence at all",
-    "OKC2-5":"Don't you remember my name",
-    "OKC3-5":"Swoop down in a country lane",
-    "OKC4-1":"Before your father hears us",
-    "OKC5-1":"The emptiest of feelings",
-    "OKC5-2":"It's so so disappointing",
-    "OKC5-3":"Let down and hanging around",
-    "OKC5-4":"Crushed like a bug in the ground",
-    "OKC5-5":"It always ends up drivel",
-    "OKC5-6":"Hysterical and useless",
-    "OKC7-2":"A patient better driver",
-    "OKC7-4":"Like a cat tied to a stick",
-    "OKC9-1":"I am the pick in the ice",
-    "OKC9-2":"You know we're friends till we die",
-    "OKC11-2":"Pull me out of the aircrash",
-    "OKC11-3":"Cause I'm your superhero",
-    "OKC11-4":"We are standing on the edge",
-    "OKC12-4":"Sometimes I get overcharged",
+    "OK1-5":"In an interstellar burst",
+    "OK1-6":"Back to save the universe",
+    "OK1-9":"I'm amazed that I survived",
+    "OK2-1":"I'm trying to get some rest",
+    "OK2-2":"Of no consequence at all",
+    "OK2-5":"Don't you remember my name",
+    "OK3-5":"Swoop down in a country lane",
+    "OK4-1":"Before your father hears us",
+    "OK5-1":"The emptiest of feelings",
+    "OK5-2":"It's so so disappointing",
+    "OK5-3":"Let down and hanging around",
+    "OK5-4":"Crushed like a bug in the ground",
+    "OK5-5":"It always ends up drivel",
+    "OK5-6":"Hysterical and useless",
+    "OK7-2":"A patient better driver",
+    "OK7-4":"Like a cat tied to a stick",
+    "OK9-1":"I am the pick in the ice",
+    "OK9-2":"You know we're friends till we die",
+    "OK11-2":"Pull me out of the aircrash",
+    "OK11-3":"Cause I'm your superhero",
+    "OK11-4":"We are standing on the edge",
+    "OK12-4":"Sometimes I get overcharged",
     "KA2-2": "Slipped on a little white lie",
     "KA6-1": "You can try the best you can",
     "KA6-3": "Dinosaurs roaming the Earth",
@@ -299,32 +298,32 @@ const radioheadLines = {
     "KA18-3": "There are weapons we can use",
     "KA20-1": "While you make pretty speeches",
     "KA20-3": "You feed me to the lions",
-    "HTT1-1": "Walk into the jaws of hell",
-    "HTT1-2": "We can wipe you out anytime",
-    "HTT3-1": "Maybe you'll be president",
-    "HTT6-1": "Where I end and you begin",
-    "HTT6-2": "The dinosaurs roam the earth",
-    "HTT6-3": "And I can't and I can't come down",
-    "HTT6-4": "Where I end and where you start",
-    "HTT6-5": "Where you, you left me alone",
-    "HTT6-6": "I will eat you all alive",
-    "HTT7-1": "Are you begging for a break",
-    "HTT7-2": "Are you strung up by the wrists",
-    "HTT7-3": "Won't let the creeping ivy",
-    "HTT8-1": "To the shadows blue and red",
-    "HTT9-1": "Waiting waiting to happen",
-    "HTT11-1": "I don't know why you bother",
-    "HTT11-2": "You had to piss on our parade",
-    "HTT12-1": "He said I been where I liked",
-    "HTT12-2": "She ate me up for breakfast",
-    "HTT13-1": "Somewhere I'm not Scatterbrain",
-    "HTT14-1": "If I don't pay the ransom",
-    "HTT14-2": "Take it with a pinch of salt",
-    "HTT8-1": "We are not the same as you",
-    "HTT8-2": "Funny haha funny how",
-    "HTT3-1": "Maybe you'll be president",
-    "HTT4-1": "I'm teetering on the brink",
-    "HTT11-1": "I don't know why you bother",
+    "HT1-1": "Walk into the jaws of hell",
+    "HT1-2": "We can wipe you out anytime",
+    "HT3-1": "Maybe you'll be president",
+    "HT6-1": "Where I end and you begin",
+    "HT6-2": "The dinosaurs roam the earth",
+    "HT6-3": "And I can't and I can't come down",
+    "HT6-4": "Where I end and where you start",
+    "HT6-5": "Where you, you left me alone",
+    "HT6-6": "I will eat you all alive",
+    "HT7-1": "Are you begging for a break",
+    "HT7-2": "Are you strung up by the wrists",
+    "HT7-3": "Won't let the creeping ivy",
+    "HT8-1": "To the shadows blue and red",
+    "HT9-1": "Waiting waiting to happen",
+    "HT11-1": "I don't know why you bother",
+    "HT11-2": "You had to piss on our parade",
+    "HT12-1": "He said I been where I liked",
+    "HT12-2": "She ate me up for breakfast",
+    "HT13-1": "Somewhere I'm not Scatterbrain",
+    "HT14-1": "If I don't pay the ransom",
+    "HT14-2": "Take it with a pinch of salt",
+    "HT8-1": "We are not the same as you",
+    "HT8-2": "Funny haha funny how",
+    "HT3-1": "Maybe you'll be president",
+    "HT4-1": "I'm teetering on the brink",
+    "HT11-1": "I don't know why you bother",
     "IR4-2": "I get eaten by the worms",
     "IR4-3": "Get picked over by the worms",
     "IR5-1": "Because there are no others",
@@ -355,185 +354,76 @@ const radioheadLines = {
   }
 };
 
-
-// Helper: animate a single line with random flashes
-function animateLine(syllables, finalLine, lineIndex, callback){
-  const display = document.getElementById('haiku');
-  let count = 0;
-  const interval = setInterval(()=>{
-    const randomLine = resolveLine(randomKey(syllables===7 ? radioheadLines.seven : radioheadLines.five), syllables);
-    const lines = display.textContent.split('\n');
-    lines[lineIndex] = randomLine;
-    display.textContent = lines.join('\n');
-    count++;
-    if(count >= 6){ // 3 flashes ~ 1 second each
-      clearInterval(interval);
-      const linesFinal = display.textContent.split('\n');
-      linesFinal[lineIndex] = finalLine;
-      display.textContent = linesFinal.join('\n');
-      if(callback) callback();
-    }
-  }, 50); // ms per flash
-}
-
-
-// Helper: pick random property from an object
-function randomKey(obj){
-  const keys = Object.keys(obj);
-  return keys[Math.floor(Math.random()*keys.length)];
-}
-
-// Parse both query-string and path-like short form
-function parseParams(){
-  const params = {};
-  // query string first
-  const search = new URLSearchParams(window.location.search);
-  if(search.get('a') || search.get('b') || search.get('c')){
-    if(search.get('a')) params.a = search.get('a');
-    if(search.get('b')) params.b = search.get('b');
-    if(search.get('c')) params.c = search.get('c');
-    return params;
-  }
-  // path-like: /a=OKC1-1b=OKC1-5c=OKC3-2
-  const path = window.location.pathname || '';
-  const parts = path.split('/').filter(Boolean);
-  if(parts.length){
-    // join last part(s)
-    const joined = parts.join('');
-    const re = /a=([A-Za-z0-9-]+)|b=([A-Za-z0-9-]+)|c=([A-Za-z0-9-]+)/g;
-    let m;
-    while((m = re.exec(joined)) !== null){
-      if(m[1]) params.a = m[1];
-      if(m[2]) params.b = m[2];
-      if(m[3]) params.c = m[3];
-    }
-  }
-  // also allow hash-based params like #a=OKC...
-  const hash = window.location.hash.replace(/^#/,'');
-  if(hash){
-    const pairs = new URLSearchParams(hash);
-    if(pairs.get('a')) params.a = pairs.get('a');
-    if(pairs.get('b')) params.b = pairs.get('b');
-    if(pairs.get('c')) params.c = pairs.get('c');
-  }
-  return params;
-}
-
-function resolveLine(id, syllables){
-  // syllables = 5 or 7
-  if(!id) return null;
-  const store = syllables===7 ? radioheadLines.seven : radioheadLines.five;
-  return store[id] || null;
-}
-
-function showResolvedParamsView(a,b,c){
-  document.getElementById('paramsView').value = `a=${a||''}  b=${b||''}  c=${c||''}`;
-}
-
-function buildHaikuFromIDs(aID,bID,cID){
-  const a = resolveLine(aID,5);
-  const b = resolveLine(bID,7);
-  const c = resolveLine(cID,5);
-  if(a && b && c){
-    return `${a}\n${b}\n${c}`;
-  }
-  return null;
-}
-
+// --- Helper functions (unchanged except as needed) ---
+function randomKey(obj){const keys=Object.keys(obj);return keys[Math.floor(Math.random()*keys.length)];}
+function resolveLine(id,syllables){const store=syllables===7?radioheadLines.seven:radioheadLines.five;return store[id]||null;}
 function generateRandomHaiku(){
-  const aID = randomKey(radioheadLines.five);
-  const bID = randomKey(radioheadLines.seven);
-  const cID = randomKey(radioheadLines.five);
-  const haiku = `${radioheadLines.five[aID]}\n${radioheadLines.seven[bID]}\n${radioheadLines.five[cID]}`;
-  showResolvedParamsView(aID,bID,cID);
-  return {haiku, ids: {a:aID,b:bID,c:cID}};
+  const aID=randomKey(radioheadLines.five);
+  const bID=randomKey(radioheadLines.seven);
+  const cID=randomKey(radioheadLines.five);
+  const haiku=[radioheadLines.five[aID],radioheadLines.seven[bID],radioheadLines.five[cID]];
+  return {haiku,ids:{a:aID,b:bID,c:cID}};
+}
+function render(haikuLines){
+  haikuLines.forEach((line,i)=>{document.getElementById(`line${i}`).textContent=line;});
 }
 
-function render(haikuText){
-  document.getElementById('haiku').textContent = haikuText;
-}
-
-// OPTION 1
-// NON-FLASHER
-/* document.getElementById('generateBtn').addEventListener('click', ()=>{
-  const {haiku, ids} = generateRandomHaiku();
-  render(haiku);
-  // update URL (shallow) to include chosen ids as query params for sharing
-  const newUrl = `${location.pathname}?a=${ids.a}&b=${ids.b}&c=${ids.c}`;
-  history.replaceState(null,'',newUrl);
-});
-*/
-//NON-FLASHER ENDS
-
-// OPTION 2
-// FLASHER
-document.getElementById('generateBtn').addEventListener('click', ()=>{
-  const {haiku, ids} = generateRandomHaiku();
-  const [line1, line2, line3] = haiku.split('\n');
-
-  // Clear current haiku
-  render('\n\n');
-
-  // Animate each line in sequence
-  animateLine(5, line1, 0, ()=>{
-    animateLine(7, line2, 1, ()=>{
-      animateLine(5, line3, 2);
-    });
-  });
-
-  // update URL (shallow) to include chosen ids as query params for sharing
-  const newUrl = `${location.pathname}?a=${ids.a}&b=${ids.b}&c=${ids.c}`;
-  history.replaceState(null,'',newUrl);
-});
-// FLASHER ENDS
-
-
-document.getElementById('copyBtn').addEventListener('click', async ()=>{
-  const txt = document.getElementById('haiku').textContent;
-  try{
-    await navigator.clipboard.writeText(txt);
-    alert('Haiku copied to clipboard');
-  }catch(e){
-    alert('Copy failed — you can manually select and copy the text');
-  }
-});
-
-document.getElementById('randomURLBtn').addEventListener('click', ()=>{
-  const {ids} = generateRandomHaiku();
-  const share = `${location.origin}${location.pathname}?a=${ids.a}&b=${ids.b}&c=${ids.c}`;
-  prompt('Shareable URL (copy):', share);
-});
-
-// On load: if params present, try to render those; otherwise show instructions
-(function init(){
-  const p = parseParams();
-  let a = p.a || null;
-  let b = p.b || null;
-  let c = p.c || null;
-
-  // If we have explicit ids and they resolve, render those.
-  if(a && b && c){
-    const haiku = buildHaikuFromIDs(a,b,c);
-    if(haiku){
-      render(haiku);
-      showResolvedParamsView(a,b,c);
-      return;
-    } else {
-      // if invalid id(s), fall through to random
-      console.warn('One or more IDs in URL did not resolve; generating random haiku instead.');
+// Animate flashing line unless paused
+function animateLine(syllables,finalLine,lineIndex,callback){
+  let count=0;
+  const display=document.getElementById(`line${lineIndex}`);
+  const interval=setInterval(()=>{
+    display.textContent = resolveLine(randomKey(syllables===7?radioheadLines.seven:radioheadLines.five),syllables);
+    count++;
+    if(count>=6){
+      clearInterval(interval);
+      display.textContent=finalLine;
+      if(callback)callback();
     }
-  }
+  },50);
+}
 
-  // If no valid params, show a random haiku on load
-  const {haiku, ids} = generateRandomHaiku();
+// --- Pause toggles ---
+const pauseStates=[false,false,false];
+document.querySelectorAll('.pauseBox').forEach(box=>{
+  box.addEventListener('click',()=>{
+    const i=parseInt(box.dataset.line);
+    pauseStates[i]=!pauseStates[i];
+    box.classList.toggle('active',pauseStates[i]);
+    box.textContent=pauseStates[i]?'X':'';
+  });
+});
+
+// --- Generate button handler ---
+document.getElementById('generateBtn').addEventListener('click',()=>{
+  const {haiku,ids}=generateRandomHaiku();
+  const [line1,line2,line3]=haiku;
+
+  // Animate or keep each line based on pause
+  if(!pauseStates[0]) animateLine(5,line1,0);
+  if(!pauseStates[1]) animateLine(7,line2,1);
+  if(!pauseStates[2]) animateLine(5,line3,2);
+});
+
+// --- Copy + Share buttons (unchanged) ---
+document.getElementById('copyBtn').addEventListener('click',async()=>{
+  const txt=[0,1,2].map(i=>document.getElementById(`line${i}`).textContent).join('\n');
+  try{await navigator.clipboard.writeText(txt);alert('Haiku copied');}
+  catch(e){alert('Copy failed — please select manually');}
+});
+document.getElementById('randomURLBtn').addEventListener('click',()=>{
+  const {ids}=generateRandomHaiku();
+  const share=`${location.origin}${location.pathname}?a=${ids.a}&b=${ids.b}&c=${ids.c}`;
+  prompt('Shareable URL (copy):',share);
+});
+
+// --- Init: random haiku on load ---
+(function init(){
+  const {haiku}=generateRandomHaiku();
   render(haiku);
-  // reflect chosen ids in the readonly field and URL
-  showResolvedParamsView(ids.a, ids.b, ids.c);
-  history.replaceState(null,'', `${location.pathname}?a=${ids.a}&b=${ids.b}&c=${ids.c}`);
 })();
 </script>
-
-
 </body>
 </html>
+
 
