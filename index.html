@@ -16,12 +16,12 @@
 </head>
 <body>
   <h1>RadioHaiku</h1>
-  <p>Click <strong>Generate</strong> to assemble a random 5-7-5 haiku from Radiohead lyrics</p>
+  <p>Random haikus from Radiohead lyrics</p>
 
   <div>
-    <button id="generateBtn">Generate random haiku</button>
+    <button id="generateBtn">Generate haiku</button>
     <button id="copyBtn">Copy haiku</button>
-    <button id="randomURLBtn">Share via URL</button>
+    <button id="randomURLBtn">Share this haiku</button>
   </div>
 
   <div id="haiku" aria-live="polite">Press Generate →</div>
@@ -53,7 +53,6 @@ const radioheadLines = {
     "PH4-2": "They won't let me be",
     "PH4-4": "We spit on your son",
     "PH4-5": "We spit on your face",
-    "PH4-6": "The feeling is that",
     "PH4-7": "I can't find the words",
     "PH4-8": "I have a complaint",
     "PH5-1": "Thinking about you",
@@ -71,7 +70,6 @@ const radioheadLines = {
     "PH8-2": "Running out on me",
     "PH8-3": "And I burn all hate",
     "PH8-4": "Not a vegetable",
-    "PH8-5": "I will not control myself",
     "PH9-2": "I'm better off dead",
     "PH10-1": "Strange and creeping doubt",
     "PH10-3": "Even though I might",
@@ -192,14 +190,39 @@ const radioheadLines = {
     "HTT14-8": "Promise to be good",
     "HTT14-9": "But he calls me up",
     "HTT14-10": "Calls me on the phone",
-    "HTT14-11": "Steal all my children"
+    "HTT14-11": "Steal all my children",
+    "IR1-5": "It comes to us all",
+    "IR2-11": "The light's gone for me",
+    "IR3-3": "You paint yourself white",
+    "IR3-4": "And feel up with noise",
+    "IR4-3": "Why should I stay here",
+    "IR4-5": "Follow where you lead",
+    "IR4-8": "If they get the chance",
+    "IR4-9": "And this is my chance",
+    "IR4-10": "I'll hit the bottom",
+    "IR5-2": "Waiting in the wings",
+    "IR5-3": "I'm an animal",
+    "IR5-4": "Trapped in your hot car",
+    "IR5-5": "I am all the days",
+    "IR5-7": "You are all I need",
+    "IR5-9": "Lying in the reeds",
+    "IR5-12": "I'm just an insect",
+    "IR6-4": "In pretty patterns",
+    "IR6-7": "It's what you feel now",
+    "IR6-9": "Dead from the neck up",
+    "IR7-5": "Dare not speak his name",
+    "IR8-1": "I don't want to be your friend",
+    "IR8-5": "Fall off the table",
+    "IR10-5": "You are my center",
+    "IR10-6": "When I spin away",
+    "IR10-10": "I'm talking to you",
+    "IR10-10": "After it's too late"
   },
   seven: {
     "PH1-1": "working out chaotic things",
     "PH1-2": "back to the top",
     "PH2-1": "Whatever makes you happy",
     "PH2-2": "You're so fucking special",
-    "PH2-3": "She run run run run run",
     "PH3-1": "He's a dangerous bigot",
     "PH3-2": "And he's just like his daddy",
     "PH4-0": "I don't wanna hear your voice",
@@ -213,7 +236,6 @@ const radioheadLines = {
     "PH7-3": "You're free 'til you've had enough",
     "PH7-4": "On politics and power",
     "PH8-1": "wanted anything but this",
-    "PH8-1": "I never wanted anything",
     "PH8-2": "I will not control myself",
     "PH8-3": "I spit on the hand that feeds",
     "PH9-1": "Hook back up to the cathode ray",
@@ -238,7 +260,7 @@ const radioheadLines = {
     "TB9-4": "Wish that it was bullet proof",
     "TB9-1": "Limb by limb and tooth by tooth",
     "OKC1-5":"In an interstellar burst",
-    "OKC1-6":"back to save the universe",
+    "OKC1-6":"Back to save the universe",
     "OKC1-9":"I'm amazed that I survived",
     "OKC2-1":"I'm trying to get some rest",
     "OKC2-2":"Of no consequence at all",
@@ -295,7 +317,6 @@ const radioheadLines = {
     "HTT11-2": "You had to piss on our parade",
     "HTT12-1": "He said I been where I liked",
     "HTT12-2": "She ate me up for breakfast",
-    "HTT12-3": "Don't know why I feel so tongue-tied",
     "HTT13-1": "Somewhere I'm not Scatterbrain",
     "HTT14-1": "If I don't pay the ransom",
     "HTT14-2": "Take it with a pinch of salt",
@@ -303,10 +324,58 @@ const radioheadLines = {
     "HTT8-2": "Funny haha funny how",
     "HTT3-1": "Maybe you'll be president",
     "HTT4-1": "I'm teetering on the brink",
-    "HTT11-1": "I don't know why you bother"
-
+    "HTT11-1": "I don't know why you bother",
+    "IR4-2": "I get eaten by the worms",
+    "IR4-3": "Get picked over by the worms",
+    "IR5-1": "Because there are no others",
+    "IR6-4": "Duplicate and triplicate",
+    "IR7-1": "Dedicated to all you",
+    "IR9-7": "Come back and focus again",
+    "IR9-8": "You've got a cheshire cat grin",
+    "IR9-10": "This place is on a mission",
+    "IR9-15": "Words are a sawed off shotgun",
+    "IR10-1": "When I'm at the pearly gates",
+    "IR10-4": "This is one for the good days",
+    "IR7-7": "It ripples our reflections",
+    "IR6-5": "Fingers in the blackbird pie",
+    "IR6-6": "I'm tingling tingling",
+    "IR6-1": "Wakey wakey, rise and shine",
+    "IR6-3": "Watch me fall like dominos",
+    "IR5-11": "Who just wants to share your light",
+    "IR4-11": "Hit the bottom and escape",
+    "IR1-6": "It's as soft as your pillow",
+    "IR2-10": "Has the light gone out for you",
+    "IR2-12": "You can fight it like a dog",
+    "IR2-13": "And they brought me to my knees",
+    "IR10-2": "No matter what happens now",
+    "IR3-1": "Don't get any big ideas",
+    "IR3-5": "But there'll be something missing",
+    "IR3-6": "Now that you've found it, it's gone",
+    "IR3-7": "Now that you feel it, you don't"
   }
 };
+
+
+// Helper: animate a single line with random flashes
+function animateLine(syllables, finalLine, lineIndex, callback){
+  const display = document.getElementById('haiku');
+  let count = 0;
+  const interval = setInterval(()=>{
+    const randomLine = resolveLine(randomKey(syllables===7 ? radioheadLines.seven : radioheadLines.five), syllables);
+    const lines = display.textContent.split('\n');
+    lines[lineIndex] = randomLine;
+    display.textContent = lines.join('\n');
+    count++;
+    if(count >= 6){ // 3 flashes ~ 1 second each
+      clearInterval(interval);
+      const linesFinal = display.textContent.split('\n');
+      linesFinal[lineIndex] = finalLine;
+      display.textContent = linesFinal.join('\n');
+      if(callback) callback();
+    }
+  }, 50); // ms per flash
+}
+
 
 // Helper: pick random property from an object
 function randomKey(obj){
@@ -384,13 +453,40 @@ function render(haikuText){
   document.getElementById('haiku').textContent = haikuText;
 }
 
-document.getElementById('generateBtn').addEventListener('click', ()=>{
+// OPTION 1
+// NON-FLASHER
+/* document.getElementById('generateBtn').addEventListener('click', ()=>{
   const {haiku, ids} = generateRandomHaiku();
   render(haiku);
   // update URL (shallow) to include chosen ids as query params for sharing
   const newUrl = `${location.pathname}?a=${ids.a}&b=${ids.b}&c=${ids.c}`;
   history.replaceState(null,'',newUrl);
 });
+*/
+//NON-FLASHER ENDS
+
+// OPTION 2
+// FLASHER
+document.getElementById('generateBtn').addEventListener('click', ()=>{
+  const {haiku, ids} = generateRandomHaiku();
+  const [line1, line2, line3] = haiku.split('\n');
+
+  // Clear current haiku
+  render('\n\n');
+
+  // Animate each line in sequence
+  animateLine(5, line1, 0, ()=>{
+    animateLine(7, line2, 1, ()=>{
+      animateLine(5, line3, 2);
+    });
+  });
+
+  // update URL (shallow) to include chosen ids as query params for sharing
+  const newUrl = `${location.pathname}?a=${ids.a}&b=${ids.b}&c=${ids.c}`;
+  history.replaceState(null,'',newUrl);
+});
+// FLASHER ENDS
+
 
 document.getElementById('copyBtn').addEventListener('click', async ()=>{
   const txt = document.getElementById('haiku').textContent;
@@ -440,3 +536,4 @@ document.getElementById('randomURLBtn').addEventListener('click', ()=>{
 
 </body>
 </html>
+
