@@ -7,8 +7,7 @@
 <title>Radiohaiku</title>
 <style>
   body{
-   /* font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; */
-    font-family: "mrs-eaves", serif; font-weight: 400; font-style: normal;
+    font-family: "mrs-eaves", serif; font-weight: 400; font-style: bold;
     max-width:720px;margin:36px auto;padding:12px;color:#111;
   }
   h1{font-family: "bd-palaktbau", sans-serif; font-weight: 200; font-style: normal;font-size:6.4rem;margin-bottom:.0rem}
@@ -19,41 +18,80 @@
   .pauseBox{width:40px;height:40px;border:2px solid #ccc;margin-right:12px;text-align:center;line-height:36px;cursor:pointer;font-weight:bold;font-size:1.5rem;border-radius:6px;user-select:none}
   .pauseBox.active{background:#222;color:#fff;border-color:#222}
   .lineText{flex:1;white-space:pre-wrap}
-  button{    font-family: "bd-palaktbau", serif; color: #333;font-size:2.4rem; font-weight: 400; font-style: normal;
-margin-right:.5rem;padding:.5rem .8rem;border-radius:0px;border:1px solid #ccc;background:white;cursor:pointer}
+  button{position:relative;overflow:hidden;font-family: "bd-palaktbau", serif; color: #333;font-size:2.4rem; font-weight: 100; font-style: normal;
+    margin-right:.1rem;padding:.5rem .8rem;border-radius:0px;border:1px solid #ccc;background:white;cursor:pointer;transition: all 0.3s ease;}
   small{color:#666}
   input[type="text"]{width:100%;padding:.5rem;border-radius:6px;border:1px solid #ccc;margin-top:.5rem}
+
+/* Toast notification */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(50, 50, 50, 0.9);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: "mrs-eaves", serif;
+    opacity: 0;
+    transform: translateY(40px);
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(.34,1.56,.64,1);
+    z-index: 1000;
+}
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ripple effect */
+button .ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple-animation 0.6s linear;
+  background-color: currentColor;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes ripple-animation {
+  to { transform: scale(4); opacity: 0; }
+}
 </style>
 </head>
 <body>
-  <h1>RADIOHAIKU</h1>
-  <h2>poetic mashups courtesy of Radiohead</h2>
+<h1>RADIOHAIKU</h1>
+<h2>poetic mashups courtesy of Radiohead</h2>
 
-  <div id="haikuContainer" aria-live="polite">
-    <div class="lineRow"><div class="pauseBox" data-line="0"></div><div class="lineText" id="line0"></div></div>
-    <div class="lineRow"><div class="pauseBox" data-line="1"></div><div class="lineText" id="line1"></div></div>
-    <div class="lineRow"><div class="pauseBox" data-line="2"></div><div class="lineText" id="line2"></div></div>
-  </div>
+<div id="haikuContainer" aria-live="polite">
+  <div class="lineRow"><div class="pauseBox" data-line="0"></div><div class="lineText" id="line0"></div></div>
+  <div class="lineRow"><div class="pauseBox" data-line="1"></div><div class="lineText" id="line1"></div></div>
+  <div class="lineRow"><div class="pauseBox" data-line="2"></div><div class="lineText" id="line2"></div></div>
+</div>
 
 <br>
 
-  <div>
-    <button id="generateBtn" style="background-color:red; color:orange;">GENERATE</button>
-    <button id="copyBtn" style="background-color:blue; color:white;">COPY</button>
-    <button id="randomURLBtn" style="background-color:green; color:yellow;">SHARE</button>
-  </div>
+<div>
+  <button id="generateBtn" style="background-color:red; color:orange;">GENERATE</button>
+  <button id="copyBtn" style="background-color:blue; color:white;">COPY</button>
+  <button id="randomURLBtn" style="background-color:green; color:yellow;">SHARE</button>
+</div>
 
+<br>
 
-  <br>
-
-  <div>
-    <p><a href="https://github.com/davidphilipgreen82/radiohaiku/blob/main/index.html">source code</a></p>
-    <p>&copy; Radiohead. All lyrics used are the property of their respective copyright holders.</p>
-  </div>
+<div>
+  <p><a>&copy; Radiohead. All lyrics used are the property of their respective copyright holders.</a> <a href="https://github.com/davidphilipgreen82/radiohaiku/blob/main/index.html">source code</a></p>
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/#:~:text=https%3A//creativecommons.org/licenses/by%2Dnc%2Dsa/4.0/"><img style="width:100px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png" ></a>
+</div>
 
 <span style="display:none">
   <input id="paramsView" readonly />
 </span>
+
+<!-- Toast -->
+<div id="toast" class="toast">Haiku copied!</div>
 
 <script>
 // --- Existing data (truncated for brevity in this example) ---
@@ -369,7 +407,8 @@ const radioheadLines = {
   }
 };
 
-// --- Helper functions (unchanged except as needed) ---
+
+// --- Helper functions ---
 function randomKey(obj){const keys=Object.keys(obj);return keys[Math.floor(Math.random()*keys.length)];}
 function resolveLine(id,syllables){const store=syllables===7?radioheadLines.seven:radioheadLines.five;return store[id]||null;}
 function generateRandomHaiku(){
@@ -379,11 +418,7 @@ function generateRandomHaiku(){
   const haiku=[radioheadLines.five[aID],radioheadLines.seven[bID],radioheadLines.five[cID]];
   return {haiku,ids:{a:aID,b:bID,c:cID}};
 }
-function render(haikuLines){
-  haikuLines.forEach((line,i)=>{document.getElementById(`line${i}`).textContent=line;});
-}
-
-// Animate flashing line unless paused
+function render(haikuLines){haikuLines.forEach((line,i)=>{document.getElementById(`line${i}`).textContent=line;});}
 function animateLine(syllables,finalLine,lineIndex,callback){
   let count=0;
   const display=document.getElementById(`line${lineIndex}`);
@@ -409,38 +444,59 @@ document.querySelectorAll('.pauseBox').forEach(box=>{
   });
 });
 
-// --- Generate button handler ---
+// --- Button animation on click ---
+function animateButton(button){
+  const originalBg = button.style.backgroundColor;
+  const originalColor = button.style.color;
+  button.style.backgroundColor = 'rgba(255,255,255,0.6)';
+  button.style.color = 'rgba(0,0,0,0.6)';
+  setTimeout(()=>{ button.style.backgroundColor=originalBg; button.style.color=originalColor; },300);
+}
+function createRipple(event){
+  const button = event.currentTarget;
+  const circle = document.createElement('span');
+  const diameter = Math.max(button.clientWidth, button.clientHeight);
+  const radius = diameter/2;
+  circle.style.width = circle.style.height = `${diameter}px`;
+  circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+  circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+  circle.style.backgroundColor = getComputedStyle(button).color;
+  circle.classList.add('ripple');
+  const ripple = button.getElementsByClassName('ripple')[0];
+  if(ripple) ripple.remove();
+  button.appendChild(circle);
+  animateButton(button);
+}
+document.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', createRipple));
+
+// --- Generate ---
 document.getElementById('generateBtn').addEventListener('click',()=>{
-  const {haiku,ids}=generateRandomHaiku();
-  const [line1,line2,line3]=haiku;
-
-  // Animate or keep each line based on pause
-  if(!pauseStates[0]) animateLine(5,line1,0);
-  if(!pauseStates[1]) animateLine(7,line2,1);
-  if(!pauseStates[2]) animateLine(5,line3,2);
+  const {haiku}=generateRandomHaiku();
+  if(!pauseStates[0]) animateLine(5,haiku[0],0);
+  if(!pauseStates[1]) animateLine(7,haiku[1],1);
+  if(!pauseStates[2]) animateLine(5,haiku[2],2);
 });
 
-// --- Copy + Share buttons (unchanged) ---
-document.getElementById('copyBtn').addEventListener('click',async()=>{
-  const txt=[0,1,2].map(i=>document.getElementById(`line${i}`).textContent).join('\n');
-  try{await navigator.clipboard.writeText(txt);alert('Haiku copied');}
-  catch(e){alert('Copy failed — please select manually');}
+// --- Copy ---
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  const txt = [0,1,2].map(i => document.getElementById(`line${i}`).textContent).join('\n');
+  const toast = document.getElementById('toast');
+  try{await navigator.clipboard.writeText(txt);toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2000);}
+  catch(e){toast.textContent='Copy failed — select manually';toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show');toast.textContent='Haiku copied!';},2000);}
 });
-document.getElementById('randomURLBtn').addEventListener('click',()=>{
+
+// --- Share ---
+document.getElementById('randomURLBtn').addEventListener('click', async () => {
   const {ids}=generateRandomHaiku();
   const share=`${location.origin}${location.pathname}?a=${ids.a}&b=${ids.b}&c=${ids.c}`;
-  prompt('Shareable URL (copy):',share);
+  const toast=document.getElementById('toast');
+  try{await navigator.clipboard.writeText(share);toast.textContent='Shareable URL copied!';toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show');toast.textContent='Haiku copied!';},2000);}
+  catch(e){toast.textContent='Copy failed — select manually';toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show');toast.textContent='Haiku copied!';},2000);}
 });
 
-// --- Init: random haiku on load ---
-(function init(){
-  const {haiku}=generateRandomHaiku();
-  render(haiku);
-})();
+// --- Init ---
+(function init(){const {haiku}=generateRandomHaiku();render(haiku);})();
 </script>
-
-
 </body>
 </html>
-
 
