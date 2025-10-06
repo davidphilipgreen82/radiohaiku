@@ -3,24 +3,31 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="https://use.typekit.net/zjy2nmb.css">
 <title>Radiohaiku</title>
 <style>
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;max-width:720px;margin:36px auto;padding:12px;color:#111}
-  h1{font-size:1.4rem;margin-bottom:.2rem}
+  body{
+   /* font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; */
+    font-family: "mrs-eaves", serif; font-weight: 400; font-style: normal;
+    max-width:720px;margin:36px auto;padding:12px;color:#111;
+  }
+  h1{font-family: "bd-palaktbau", sans-serif; font-weight: 200; font-style: normal;font-size:6.4rem;margin-bottom:.0rem}
+  h2{font-family: "mrs-eaves", sans-serif; font-weight: 400; font-style: normal;font-size:1.4rem;margin-top:-.2rem}
   p{margin:.2rem 0 1rem 0}
   #haikuContainer{font-size:2.25rem;padding:16px;border-radius:10px;background:#f4f4f6}
   .lineRow{display:flex;align-items:center;margin:.25rem 0}
   .pauseBox{width:40px;height:40px;border:2px solid #ccc;margin-right:12px;text-align:center;line-height:36px;cursor:pointer;font-weight:bold;font-size:1.5rem;border-radius:6px;user-select:none}
   .pauseBox.active{background:#222;color:#fff;border-color:#222}
   .lineText{flex:1;white-space:pre-wrap}
-  button{margin-right:.5rem;padding:.5rem .8rem;border-radius:8px;border:1px solid #ccc;background:white;cursor:pointer}
+  button{    font-family: "bd-palaktbau", serif; color: #333;font-size:2.4rem; font-weight: 400; font-style: normal;
+margin-right:.5rem;padding:.5rem .8rem;border-radius:8px;border:1px solid #ccc;background:white;cursor:pointer}
   small{color:#666}
   input[type="text"]{width:100%;padding:.5rem;border-radius:6px;border:1px solid #ccc;margin-top:.5rem}
 </style>
 </head>
 <body>
-  <h1>RadioHaiku</h1>
-  <p>Miserable haikus courtesy of Radiohead</p>
+  <h1>RADIOHAIKU</h1>
+  <h2>poetic mashups courtesy of Radiohead</h2>
 
   <div id="haikuContainer" aria-live="polite">
     <div class="lineRow"><div class="pauseBox" data-line="0"></div><div class="lineText" id="line0"></div></div>
@@ -31,18 +38,18 @@
 <br>
 
   <div>
-    <button id="generateBtn">Generate haiku</button>
-    <button id="copyBtn">Copy haiku</button>
-    <button id="randomURLBtn">Share this haiku</button>
+    <button id="generateBtn">GENERATE</button>
+    <button id="copyBtn">COPY</button>
+    <button id="randomURLBtn">SHARE</button>
   </div>
 
-<br>
+
+  <br>
 
   <div>
-    <p><a href="https://github.com/davidphilipgreen82/radiohaiku/blob/main/index.html">Source Code</a></p>
+    <p><a href="https://github.com/davidphilipgreen82/radiohaiku/blob/main/index.html">source code</a></p>
   </div>
 
-  
 <span style="display:none">
   <input id="paramsView" readonly />
 </span>
@@ -397,7 +404,7 @@ document.querySelectorAll('.pauseBox').forEach(box=>{
     const i=parseInt(box.dataset.line);
     pauseStates[i]=!pauseStates[i];
     box.classList.toggle('active',pauseStates[i]);
-    box.textContent=pauseStates[i]?'X':'';
+    box.textContent=pauseStates[i]?'.':'';
   });
 });
 
