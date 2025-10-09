@@ -6,65 +6,174 @@
 <link rel="stylesheet" href="https://use.typekit.net/zjy2nmb.css">
 <title>Radiohaiku</title>
 <style>
-  body{
-    font-family: "mrs-eaves", serif; font-weight: 400; font-style: bold;
-    max-width:720px;margin:36px auto;padding:12px;color:#111;
-  }
-  h1{font-family: "bd-palaktbau", sans-serif; font-weight: 200; font-style: normal;font-size:6.4rem;margin-bottom:.0rem}
-  h2{font-family: "mrs-eaves", sans-serif; font-weight: 400; font-style: normal;font-size:1.4rem;margin-top:-.2rem}
-  p{margin:.2rem 0 1rem 0}
-  #haikuContainer{font-size:2.25rem;padding:16px;border-radius:10px;background:#f4f4f6}
-  .lineRow{display:flex;align-items:center;margin:.25rem 0}
-  .pauseBox{width:40px;height:40px;border:2px solid #ccc;margin-right:12px;text-align:center;line-height:36px;cursor:pointer;font-weight:bold;font-size:1.5rem;border-radius:6px;user-select:none}
-  .pauseBox.active{background:#222;color:#fff;border-color:#222}
-  .lineText{flex:1;white-space:pre-wrap}
-  button{position:relative;overflow:hidden;font-family: "bd-palaktbau", serif; color: #333;font-size:2.4rem; font-weight: 100; font-style: normal;
-    margin-right:.1rem;margin-bottom:.1rem;padding:.5rem .8rem;border-radius:0px;border:1px solid #ccc;background:white;cursor:pointer;transition: all 0.3s ease; }
-    a:link, a:visited, a:active, a:hover {text-decoration: none;}
-  small{color:#666}
-  input[type="text"]{width:100%;padding:.5rem;border-radius:6px;border:1px solid #ccc;margin-top:.5rem}
+body {
+  font-family: "mrs-eaves", serif;
+  max-width: 720px;
+  margin: 36px auto;
+  padding: 12px;
+  color: #111;
+}
 
-/* Toast notification */
+h1 {
+  font-family: "bd-palaktbau", sans-serif;
+  font-weight: 200;
+  font-size: 6.4rem;
+  margin-bottom: 0;
+}
+h2 {
+  font-family: "mrs-eaves", sans-serif;
+  font-weight: 400;
+  font-size: 1.4rem;
+  margin-top: -0.2rem;
+}
+
+#haikuContainer {
+  font-size: 2.25rem;
+  padding: 16px;
+  border-radius: 10px;
+  background: #f4f4f6;
+}
+.lineRow { display: flex; align-items: center; margin: .25rem 0; }
+.pauseBox {
+  width: 40px; height: 40px;
+  border: 2px solid #ccc; margin-right: 12px;
+  text-align: center; line-height: 36px;
+  cursor: pointer; font-weight: bold; font-size: 1.5rem;
+  border-radius: 6px; user-select: none;
+}
+.pauseBox.active { background: #222; color: #fff; border-color: #222; }
+.lineText { flex: 1; white-space: pre-wrap; }
+
+button {
+  position: relative; overflow: hidden;
+  font-family: "bd-palaktbau", serif;
+  color: #333; font-size: 2.4rem;
+  margin-right: .1rem; margin-bottom: .1rem;
+  padding: .5rem .8rem; border-radius: 0;
+  border: 1px solid #ccc; background: white;
+  cursor: pointer; transition: all 0.3s ease;
+}
+a { color: inherit; text-decoration: none; }
+
 .toast {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(50, 50, 50, 0.9);
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-family: "mrs-eaves", serif;
-    opacity: 0;
-    transform: translateY(40px);
-    pointer-events: none;
-    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(.34,1.56,.64,1);
-    z-index: 1000;
-}
-.toast.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* ripple effect */
-button .ripple {
-  position: absolute;
-  border-radius: 50%;
-  transform: scale(0);
-  animation: ripple-animation 0.6s linear;
-  background-color: currentColor;
-  opacity: 0.3;
+  position: fixed; bottom: 20px; right: 20px;
+  background: rgba(50,50,50,0.9); color: #fff;
+  padding: 8px 16px; border-radius: 6px;
+  font-size: 1rem; font-family: "mrs-eaves", serif;
+  opacity: 0; transform: translateY(40px);
   pointer-events: none;
-  z-index: 1;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(.34,1.56,.64,1);
+  z-index: 1000;
 }
-@keyframes ripple-animation {
-  to { transform: scale(4); opacity: 0; }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+button .ripple {
+  position: absolute; border-radius: 50%;
+  transform: scale(0); animation: ripple-animation 0.6s linear;
+  background-color: currentColor; opacity: 0.3; pointer-events: none; z-index: 1;
 }
+@keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
+
+/* --- Album filter grid --- */
+  /* Container: horizontal on desktop, friendly on mobile */
+  #albumFilter {
+    display: flex;
+    flex-wrap: nowrap;              /* keep on one line where possible */
+    gap: 8px;
+    overflow-x: auto;               /* horizontal scroll if needed */
+    -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+    scroll-snap-type: x proximity;  /* optional: snap while scrolling */
+    padding: 8px 0;
+    align-items: center;
+  }
+
+  /* Each album tile */
+  .album {
+    position: relative;
+    flex: 0 0 auto;                 /* don't shrink, don't grow */
+    width: 72px;
+    height: 72px;
+    border-radius: 0px;
+    cursor: pointer;
+    overflow: hidden;
+    scroll-snap-align: center;      /* snap point for horizontal scroll */
+    outline: none;                  /* we'll use visible focus styles below */
+  }
+
+  .album img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: filter 0.2s ease;   /* for brightening / grayscale */
+    display: block;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  /* Big, clear red X overlay (inside the tile) */
+  .album .albumX {
+    position: absolute;
+    inset: 0;                        /* top:0;right:0;bottom:0;left:0 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff2b2b;
+    font-size: 3.4rem;
+    font-weight: 900;
+    background-color: rgba(255,255,255,0.32); /* semi-opaque layer to increase contrast */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  /* Deselected / inactive state */
+  .album:not(.selected) img {
+    filter: brightness(1.25) grayscale(100%);
+  }
+  .album:not(.selected) .albumX {
+    opacity: 1;
+  }
+
+  /* === Responsive adjustments for small screens === */
+  @media (max-width: 640px) {
+    #albumFilter {
+      /* allow wrap on smaller screens so tiles don't get tiny */
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 0;
+    }
+    .album {
+      width: 64px;
+      height: 64px;
+      scroll-snap-align: none; /* snapping is less useful when wrapping */
+    }
+    .album .albumX { font-size: 2.6rem; background-color: rgba(255,255,255,0.28); }
+  }
+
+  @media (max-width: 380px) {
+    .album { width: 56px; height: 56px; }
+    .album .albumX { font-size: 2.2rem; }
+  }
 </style>
 </head>
 <body>
+
 <h1>RADIOHAIKU</h1>
 <h2>poetic mashups courtesy of Radiohead</h2>
+
+<!-- Album Filter -->
+<div id="albumFilter">
+  <div class="album selected" data-album="PH"><img src="https://upload.wikimedia.org/wikipedia/en/0/0f/Radiohead.pablohoney.albumart.jpg" alt="Pablo Honey"><div class="albumX">✖</div></div>
+  <div class="album selected" data-album="TB"><img src="https://upload.wikimedia.org/wikipedia/en/5/55/Radioheadthebends.png" alt="The Bends"><div class="albumX">✖</div></div>
+  <div class="album selected" data-album="OK"><img src="https://upload.wikimedia.org/wikipedia/en/b/ba/Radioheadokcomputer.png" alt="OK Computer"><div class="albumX">✖</div></div>
+  <div class="album selected" data-album="KA"><img src="https://upload.wikimedia.org/wikipedia/en/0/02/Radioheadkida.png" alt="Kid A"><div class="albumX">✖</div></div>
+  <div class="album selected" data-album="AM"><img src="https://upload.wikimedia.org/wikipedia/en/8/8c/Radiohead_-_Amnesiac_cover.png" alt="Amnesiac"><div class="albumX">✖</div></div>
+  <div class="album selected" data-album="HT"><img src="https://upload.wikimedia.org/wikipedia/en/6/61/Radioheadhailtothethief.png" alt="Hail to the Thief"><div class="albumX">✖</div></div>
+  <div class="album selected" data-album="IR"><img src="https://upload.wikimedia.org/wikipedia/en/1/14/Inrainbowscover.png" alt="In Rainbows"><div class="albumX">✖</div></div>
+  <div class="album selected" data-album="KL"><img src="https://upload.wikimedia.org/wikipedia/en/a/a2/Radioheadthekingoflimbs.png" alt="King of Limbs"><div class="albumX">✖</div></div>
+  <div class="album selected" data-album="MS"><img src="https://upload.wikimedia.org/wikipedia/en/6/6a/Amoonshapedpool.png" alt="A Moon Shaped Pool"><div class="albumX">✖</div></div>
+</div>
 
 <div id="haikuContainer" aria-live="polite">
   <div class="lineRow"><div class="pauseBox" data-line="0"></div><div class="lineText" id="line0"></div></div>
@@ -73,30 +182,16 @@ button .ripple {
 </div>
 
 <br>
-
 <div>
   <button id="generateBtn" style="background-color:red; color:orange;">GENERATE</button>
   <button id="copyBtn" style="background-color:blue; color:white;">COPY</button>
   <button id="randomURLBtn" style="background-color:green; color:yellow;">SHARE</button>
-  <button id="Source" style="background-color:orange; color:forestgreen;"><a href="https://github.com/davidphilipgreen82/radiohaiku/blob/main/index.html">SOURCE</a></button>
+  <button id="sourceBtn" style="background-color:orange; color:forestgreen;"><a href="https://github.com/davidphilipgreen82/radiohaiku/blob/main/index.html">SOURCE</a></button>
 </div>
 
-<br>
-
-<!--<div>
-  <p><a>All lyrics used are the property of their respective copyright holders.</a></p>
-  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/#:~:text=https%3A//creativecommons.org/licenses/by%2Dnc%2Dsa/4.0/"><img style="width:100px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png" ></a>
-</div>
--->
-<span style="display:none">
-  <input id="paramsView" readonly />
-</span>
-
-<!-- Toast -->
 <div id="toast" class="toast">Haiku copied!</div>
 
 <script>
-// --- Existing data (truncated for brevity in this example) ---
 const radioheadLines = {
   five: {
     "PH1-1": "Sun and moon and stars",
@@ -139,7 +234,6 @@ const radioheadLines = {
     "PH12-3": "Everything I touch",
     "TB1-11": "Why can't you forget",
     "TB2-2": "The words are coming",
-    "TB2-3": "Fall asleep against",
     "TB2-5": "Baby's got the bends",
     "TB3-1": "Two jumps in a week",
     "TB4-2": "The fake plastic earth",
@@ -533,32 +627,7 @@ const radioheadLines = {
 };
 
 
-// --- Helper functions ---
-function randomKey(obj){const keys=Object.keys(obj);return keys[Math.floor(Math.random()*keys.length)];}
-function resolveLine(id,syllables){const store=syllables===7?radioheadLines.seven:radioheadLines.five;return store[id]||null;}
-function generateRandomHaiku(){
-  const aID=randomKey(radioheadLines.five);
-  const bID=randomKey(radioheadLines.seven);
-  const cID=randomKey(radioheadLines.five);
-  const haiku=[radioheadLines.five[aID],radioheadLines.seven[bID],radioheadLines.five[cID]];
-  return {haiku,ids:{a:aID,b:bID,c:cID}};
-}
-function render(haikuLines){haikuLines.forEach((line,i)=>{document.getElementById(`line${i}`).textContent=line;});}
-function animateLine(syllables,finalLine,lineIndex,callback){
-  let count=0;
-  const display=document.getElementById(`line${lineIndex}`);
-  const interval=setInterval(()=>{
-    display.textContent = resolveLine(randomKey(syllables===7?radioheadLines.seven:radioheadLines.five),syllables);
-    count++;
-    if(count>=6){
-      clearInterval(interval);
-      display.textContent=finalLine;
-      if(callback)callback();
-    }
-  },50);
-}
-
-// --- Pause toggles ---
+// Pause functionality
 const pauseStates=[false,false,false];
 document.querySelectorAll('.pauseBox').forEach(box=>{
   box.addEventListener('click',()=>{
@@ -569,59 +638,68 @@ document.querySelectorAll('.pauseBox').forEach(box=>{
   });
 });
 
-// --- Button animation on click ---
-function animateButton(button){
-  const originalBg = button.style.backgroundColor;
-  const originalColor = button.style.color;
-  button.style.backgroundColor = 'rgba(255,255,255,0.6)';
-  button.style.color = 'rgba(0,0,0,0.6)';
-  setTimeout(()=>{ button.style.backgroundColor=originalBg; button.style.color=originalColor; },300);
+// Album filter logic
+const albums=document.querySelectorAll('.album');
+function getActiveAlbums(){
+  return [...albums].filter(a=>a.classList.contains('selected')).map(a=>a.dataset.album);
 }
-function createRipple(event){
-  const button = event.currentTarget;
-  const circle = document.createElement('span');
-  const diameter = Math.max(button.clientWidth, button.clientHeight);
-  const radius = diameter/2;
-  circle.style.width = circle.style.height = `${diameter}px`;
-  circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
-  circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
-  circle.style.backgroundColor = getComputedStyle(button).color;
-  circle.classList.add('ripple');
-  const ripple = button.getElementsByClassName('ripple')[0];
-  if(ripple) ripple.remove();
-  button.appendChild(circle);
-  animateButton(button);
-}
-document.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', createRipple));
+albums.forEach(a=>{
+  a.addEventListener('click',()=>a.classList.toggle('selected'));
+});
 
-// --- Generate ---
+// Helper functions
+function randomKey(obj, albumFilter){
+  let keys=Object.keys(obj);
+  if(albumFilter && albumFilter.length>0)
+    keys=keys.filter(k=>albumFilter.includes(k.slice(0,2)));
+  return keys[Math.floor(Math.random()*keys.length)];
+}
+function resolveLine(id,syllables){const store=syllables===7?radioheadLines.seven:radioheadLines.five;return store[id]||'';}
+function animateLine(syllables,finalLine,lineIndex){
+  let count=0; const display=document.getElementById(`line${lineIndex}`);
+  const interval=setInterval(()=>{
+    if(pauseStates[lineIndex]) return;
+    display.textContent=resolveLine(randomKey(syllables===7?radioheadLines.seven:radioheadLines.five,getActiveAlbums()),syllables);
+    count++; if(count>=6){clearInterval(interval);display.textContent=finalLine;}
+  },50);
+}
+function generateRandomHaiku(albumFilter){
+  const aID=randomKey(radioheadLines.five,albumFilter);
+  const bID=randomKey(radioheadLines.seven,albumFilter);
+  const cID=randomKey(radioheadLines.five,albumFilter);
+  return {haiku:[radioheadLines.five[aID],radioheadLines.seven[bID],radioheadLines.five[cID]],ids:{a:aID,b:bID,c:cID}};
+}
 document.getElementById('generateBtn').addEventListener('click',()=>{
-  const {haiku}=generateRandomHaiku();
+  const {haiku}=generateRandomHaiku(getActiveAlbums());
   if(!pauseStates[0]) animateLine(5,haiku[0],0);
   if(!pauseStates[1]) animateLine(7,haiku[1],1);
   if(!pauseStates[2]) animateLine(5,haiku[2],2);
 });
 
-// --- Copy ---
-document.getElementById('copyBtn').addEventListener('click', async () => {
-  const txt = [0,1,2].map(i => document.getElementById(`line${i}`).textContent).join('\n');
-  const toast = document.getElementById('toast');
-  try{await navigator.clipboard.writeText(txt);toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2000);}
-  catch(e){toast.textContent='Copy failed — select manually';toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show');toast.textContent='Haiku copied!';},2000);}
+// Copy and share
+const toast=document.getElementById('toast');
+function showToast(msg){
+  toast.textContent=msg; toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),2000);
+}
+document.getElementById('copyBtn').addEventListener('click', async ()=>{
+  const txt=[0,1,2].map(i=>document.getElementById(`line${i}`).textContent).join('\n');
+  try{await navigator.clipboard.writeText(txt); showToast('Haiku copied!');}
+  catch{showToast('Copy failed');}
 });
-
-// --- Share ---
-document.getElementById('randomURLBtn').addEventListener('click', async () => {
-  const {ids}=generateRandomHaiku();
+document.getElementById('randomURLBtn').addEventListener('click', async ()=>{
+  const {ids}=generateRandomHaiku(getActiveAlbums());
   const share=`${location.origin}${location.pathname}?a=${ids.a}&b=${ids.b}&c=${ids.c}`;
-  const toast=document.getElementById('toast');
-  try{await navigator.clipboard.writeText(share);toast.textContent='Shareable URL copied!';toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show');toast.textContent='Haiku copied!';},2000);}
-  catch(e){toast.textContent='Copy failed — select manually';toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show');toast.textContent='Haiku copied!';},2000);}
+  try{await navigator.clipboard.writeText(share); showToast('Shareable URL copied!');}
+  catch{showToast('Copy failed');}
 });
 
-// --- Init ---
-(function init(){const {haiku}=generateRandomHaiku();render(haiku);})();
+// Initial haiku
+(function init(){
+  const {haiku}=generateRandomHaiku(getActiveAlbums());
+  haiku.forEach((l,i)=>document.getElementById(`line${i}`).textContent=l);
+})();
 </script>
+
 </body>
 </html>
-
