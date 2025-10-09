@@ -19,7 +19,8 @@
   .pauseBox.active{background:#222;color:#fff;border-color:#222}
   .lineText{flex:1;white-space:pre-wrap}
   button{position:relative;overflow:hidden;font-family: "bd-palaktbau", serif; color: #333;font-size:2.4rem; font-weight: 100; font-style: normal;
-    margin-right:.1rem;padding:.5rem .8rem;border-radius:0px;border:1px solid #ccc;background:white;cursor:pointer;transition: all 0.3s ease;}
+    margin-right:.1rem;margin-bottom:.1rem;padding:.5rem .8rem;border-radius:0px;border:1px solid #ccc;background:white;cursor:pointer;transition: all 0.3s ease; }
+    a:link, a:visited, a:active, a:hover {text-decoration: none;}
   small{color:#666}
   input[type="text"]{width:100%;padding:.5rem;border-radius:6px;border:1px solid #ccc;margin-top:.5rem}
 
@@ -77,15 +78,16 @@ button .ripple {
   <button id="generateBtn" style="background-color:red; color:orange;">GENERATE</button>
   <button id="copyBtn" style="background-color:blue; color:white;">COPY</button>
   <button id="randomURLBtn" style="background-color:green; color:yellow;">SHARE</button>
+  <button id="Source" style="background-color:orange; color:forestgreen;"><a href="https://github.com/davidphilipgreen82/radiohaiku/blob/main/index.html">SOURCE</a></button>
 </div>
 
 <br>
 
-<div>
-  <p><a>&copy; Radiohead. All lyrics used are the property of their respective copyright holders.</a> <a href="https://github.com/davidphilipgreen82/radiohaiku/blob/main/index.html">source code</a></p>
+<!--<div>
+  <p><a>All lyrics used are the property of their respective copyright holders.</a></p>
   <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/#:~:text=https%3A//creativecommons.org/licenses/by%2Dnc%2Dsa/4.0/"><img style="width:100px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png" ></a>
 </div>
-
+-->
 <span style="display:none">
   <input id="paramsView" readonly />
 </span>
